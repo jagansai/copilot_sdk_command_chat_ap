@@ -2,13 +2,16 @@
 
 A Python application that uses the official GitHub Copilot SDK to answer questions about admin commands documented in `commands.md`.
 
+![Demo](demo_gif.gif)
+
 ## Features
 
 - 🤖 Interactive chat interface powered by GitHub Copilot
-- 📚 Context-aware responses based on commands documentation
-- 💬 Async/await pattern for efficient API calls
+- 📚 RAG-based retrieval for efficient context management
+- 💬 Streaming responses with loading animation
 - 🎯 Provides command syntax, parameters, and examples
 - ✨ Uses the official GitHub Copilot SDK for Python
+- ⚙️ Configurable via properties file
 
 ## Prerequisites
 
@@ -165,29 +168,53 @@ Goodbye! Thanks for using Command Chat Assistant!
 
 ```
 copilot_sdk_command_chat_app/
-├── command_chat_app.py          # Main application
-├── commands.md                  # Commands documentation
+├── command_chat_app.py          # Main application with UI orchestration
+├── copilot_service.py           # Service layer for Copilot SDK
+├── rag_engine.py                # RAG retrieval engine
 ├── requirements.txt             # Python dependencies
 ├── README.md                    # This file
+├── .gitignore                   # Git ignore rules
+├── .env.example                 # Environment variables template
+├── run.ps1                      # PowerShell launcher
+├── run.sh                       # Bash launcher
+├── config/
+│   └── app.properties           # Application configuration
+├── resources/
+│   └── commands.md              # Commands documentation
+├── utils/
+│   ├── __init__.py
+│   └── property_loader.py       # Configuration loader
+├── debug/
+│   ├── debug_chunks.py          # Debug RAG chunking
+│   ├── debug_keywords.py        # Debug keyword extraction
+│   └── test_rag.py              # Test RAG retrieval
 └── venv/                        # Virtual environment (created after setup)
 ```
 
 ## How It Works
 
 1. **CommandChatApp**: Main application class that:
-   - Loads the commands.md file
-   - Initializes the GitHub Copilot SDK Agent
-   - Creates a session with commands context as system instructions
-   - Provides an interactive console interface
-   - Manages the async chat loop
+   - Loads configuration from `config/app.properties`
+   - Initializes the RAG engine and Copilot service
+   - Manages the interactive console interface with spinner animation
+   - Coordinates between RAG retrieval and AI responses
 
-2. **Agent**: GitHub Copilot SDK agent:
-   - Connects to GitHub Copilot services
-   - Uses GPT-4 model for responses
-   - Maintains conversation context
-   - Handles event-based messaging
+2. **RAGEngine**: Retrieval-Augmented Generation engine:
+   - Chunks the commands.md document by sections
+   - Extracts keywords with synonym matching
+   - Retrieves top-N relevant chunks for each query
+   - Reduces token usage by sending only relevant context
 
-3. **Context Injection**: The entire commands.md content is provided as system instructions when creating the agent, enabling accurate responses about documented commands.
+3. **CopilotService**: Service layer for GitHub Copilot SDK:
+   - Manages CopilotClient and CopilotSession lifecycle
+   - Handles streaming responses with token-by-token callbacks
+   - Buffers complete responses for return values
+   - Isolates SDK dependencies from UI layer
+
+4. **PropertyLoader**: Configuration management:
+   - Loads settings from INI-format properties file
+   - Supports UTF-8 encoding for Unicode spinner characters
+   - Centralizes configuration for easy customization
 
 ## Troubleshooting
 
@@ -220,24 +247,38 @@ python --version
 
 ## Configuration
 
-### Change the Model
+All configuration is managed through `config/app.properties`:
 
-Edit `command_chat_app.py` and modify the model in the AgentConfig:
-```python
-config = AgentConfig(
-    name="command-assistant",
-    description="An assistant that helps with admin commands",
-    instructions=system_message,
-    model="gpt-4o"  # Change to "claude-sonnet-4.5", "o3-mini", etc.
-)
+### Application Settings
+```ini
+[app]
+commands.file = resources/commands.md  # Path to commands documentation
+model = gpt-4.1                         # AI model to use
+spinner.chars = ⠋,⠙,⠹,⠸,⠼,⠴,⠦,⠧,⠇,⠏    # Loading spinner characters
+loading.message = Loading commands from: commands.md
 ```
 
-### Use a Different Documentation File
-
-Pass a different file path when creating the CommandChatApp:
-```python
-app = CommandChatApp("path/to/your/docs.md")
+### RAG Settings
+```ini
+[rag]
+enabled = true      # Enable/disable RAG retrieval
+max.chunks = 3      # Maximum relevant chunks to include per query
 ```
+
+### Messages
+```ini
+[messages]
+system.prompt = You are a helpful assistant...
+goodbye = Goodbye! Thanks for using Command Chat Assistant!
+```
+
+### Available Models
+You can change the model to:
+- `gpt-4.1` (default)
+- `gpt-4o`
+- `claude-sonnet-4.5`
+- `o3-mini`
+- Or any other supported Copilot model
 
 ## Comparison with Java Version
 
