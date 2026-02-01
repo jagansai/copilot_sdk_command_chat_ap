@@ -74,44 +74,88 @@ $env:GITHUB_TOKEN="your_github_token_here"  # PowerShell
 python command_chat_app.py
 ```
 
-### Example Interactions
+### Example Session
 
-**Example 1: Ask about a specific command**
 ```
-You: How do I list all active sessions?
-Assistant: To list all active sessions, use the command `/session list`. 
-This command doesn't require any parameters and will show you all active 
-sessions with their Session ID, User, Start Time, and Status.
+Loading commands from: commands.md
+✓ RAG enabled: 8 chunks indexed, showing top 3 per query
 
-Example: `/session list`
+✓ Copilot service initialized successfully
+
+==================================================
+  Command Chat Assistant - Powered by Copilot
+==================================================
+Ask me anything about the available commands!
+Type 'exit' or 'quit' to end the session.
+
+You: hwo to view sessions?
+To view all active sessions, use the following command:
+
+/session list
+
+This command does not require any parameters. It will display a list of all currently active sessions, including their session IDs, users, and start times.
+
+**Example Usage:**
 ```
-
-**Example 2: Ask about parameters**
-```
-You: What parameters does the user create command need?
-Assistant: The `/user create` command requires three parameters:
-- username (String, Required): The desired username
-- email (String, Required): User's email address
-- role (String, Required): User role (admin, moderator, user)
-
-Example usage: `/user create john.doe john.doe@example.com moderator`
-```
-
-**Example 3: General questions**
-```
-You: How can I backup the database?
-Assistant: To backup the database, use the `/db backup` command.
-You can optionally provide a custom name with the --name parameter.
-
-Examples:
-- `/db backup` (auto-generated timestamp name)
-- `/db backup --name pre-migration-backup` (custom name)
-
-The command will return the backup file location and size.
+/session list
 ```
 
-**Example 4: Exit the chat**
+**Example Response:**
 ```
+Active Sessions:
+1. Session ID: 12345, User: admin, Started: 2024-06-01 10:00 AM
+2. Session ID: 67890, User: user1, Started: 2024-06-01 11:30 AM
+```
+
+Let me know if you need help with session termination or other session management commands!
+
+You: show exchange info for NSE
+To show information for the NSE (National Stock Exchange), use the following command:
+
+/show exchange NSE
+
+This will display details about the NSE, such as its location, timezone, and trading hours.
+
+**Example Usage:**
+```
+/show exchange NSE
+```
+
+Let me know if you need information about a specific symbol or market as well!
+
+You: show exchange info for TSE
+To view information about the TSE (Tokyo Stock Exchange), use the following command:
+
+/show exchange TSE
+
+This will display details such as the exchange name, location, timezone, and trading hours.
+
+**Example Usage:**
+```
+/show exchange TSE
+```
+
+Let me know if you need information about another exchange or a specific symbol!
+
+You: how to terminate a session
+To terminate a specific session, use the following command:
+
+/session terminate <session_id>
+
+Replace <session_id> with the actual ID of the session you want to terminate.
+
+**Example Usage:**
+```
+/session terminate 12345
+```
+
+This will terminate the session with ID 12345.
+
+If you want to terminate all active sessions, use:
+/session terminate all
+
+Let me know if you need help finding the session ID or have any other questions!
+
 You: exit
 
 Goodbye! Thanks for using Command Chat Assistant!
